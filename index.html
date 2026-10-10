@@ -89,10 +89,16 @@ details .field { margin-top: 14px; }
 .meta dt { color: var(--muted); }
 .meta dd { margin: 0; text-align: right; font-family: var(--font-num); font-variant-numeric: tabular-nums; }
 
-.tbl-wrap { overflow-x: auto; }
-table { width: 100%; border-collapse: collapse; font-size: 14px; min-width: 480px; }
-th, td { padding: 10px 10px; border-bottom: 1px solid var(--line); text-align: right; white-space: nowrap; }
-th:first-child, td:first-child { text-align: left; }
+.results { container-type: inline-size; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; }
+th, td { padding: 10px 6px; border-bottom: 1px solid var(--line); text-align: right; white-space: nowrap; }
+th:first-child, td:first-child { text-align: left; white-space: normal; word-break: keep-all; padding-left: 0; }
+th:last-child, td:last-child { padding-right: 0; }
+.tbl-narrow { display: none; }
+@container (max-width: 540px) {
+  .tbl-wide { display: none; }
+  .tbl-narrow { display: table; }
+}
 thead th { font-size: 12px; color: var(--muted); font-weight: 600; border-bottom: 2px solid var(--ink); }
 td.n { font-family: var(--font-num); font-variant-numeric: tabular-nums; font-weight: 500; }
 td.hot { color: var(--hot); font-weight: 600; }
@@ -154,12 +160,21 @@ td.hot { color: var(--hot); font-weight: 600; }
       <dl class="meta">
         <dt>매입좌수</dt><dd id="units">–</dd>      </dl>
 
-      <div class="tbl-wrap">
-        <table>
+      <div class="results">
+        <table class="tbl-wide">
           <thead><tr><th>구분</th><th>월간(세전)</th><th>월간(세후)</th><th>연간(세전)</th><th>연간(세후)</th></tr></thead>
           <tbody>
-            <tr><td>매입금액 대비 월 분배금(원)</td><td class="n" id="m0">–</td><td class="n" id="m1">–</td><td class="n" id="y0">–</td><td class="n" id="y1">–</td></tr>
-            <tr><td>매입금액 대비 분배율(연)</td><td class="n hot" id="r0">–</td><td class="n" id="r1">–</td><td class="n" id="r2">–</td><td class="n" id="r3">–</td></tr>
+            <tr><td>매입금액 대비 월 분배금(원)</td><td class="n" data-k="m0">–</td><td class="n" data-k="m1">–</td><td class="n" data-k="y0">–</td><td class="n" data-k="y1">–</td></tr>
+            <tr><td>매입금액 대비 분배율(연)</td><td class="n hot" data-k="r0">–</td><td class="n" data-k="r1">–</td><td class="n" data-k="r2">–</td><td class="n" data-k="r3">–</td></tr>
+          </tbody>
+        </table>
+        <table class="tbl-narrow">
+          <thead><tr><th>구분</th><th>월 분배금(원)</th><th>분배율(연)</th></tr></thead>
+          <tbody>
+            <tr><td>월간(세전)</td><td class="n" data-k="m0">–</td><td class="n hot" data-k="r0">–</td></tr>
+            <tr><td>월간(세후)</td><td class="n" data-k="m1">–</td><td class="n" data-k="r1">–</td></tr>
+            <tr><td>연간(세전)</td><td class="n" data-k="y0">–</td><td class="n" data-k="r2">–</td></tr>
+            <tr><td>연간(세후)</td><td class="n" data-k="y1">–</td><td class="n" data-k="r3">–</td></tr>
           </tbody>
         </table>
       </div>
@@ -220,14 +235,16 @@ td.hot { color: var(--hot); font-weight: 600; }
     const ok = nav > 0 && amt > 0;
 
     $("units").textContent = ok ? Math.round(units).toLocaleString("ko-KR") + "좌" : dash;
-    $("m0").textContent = ok ? won(m0) : dash;
-    $("m1").textContent = ok ? won(m1) : dash;
-    $("y0").textContent = ok ? won(m0 * 12) : dash;
-    $("y1").textContent = ok ? won(m1 * 12) : dash;
-    $("r0").textContent = nav > 0 ? pct(rate) : dash;
-    $("r1").textContent = nav > 0 ? pct(rate * keep) : dash;
-    $("r2").textContent = ok ? pct(m0 * 12 / amt) : dash;
-    $("r3").textContent = ok ? pct(m1 * 12 / amt) : dash;
+    const set = (k, v) => document.querySelectorAll('[data-k="' + k + '"]').forEach(el => { el.textContent = v; });
+    const n0 = v => Math.round(v).toLocaleString("ko-KR");
+    set("m0", ok ? n0(m0) : dash);
+    set("m1", ok ? n0(m1) : dash);
+    set("y0", ok ? n0(m0 * 12) : dash);
+    set("y1", ok ? n0(m1 * 12) : dash);
+    set("r0", nav > 0 ? pct(rate) : dash);
+    set("r1", nav > 0 ? pct(rate * keep) : dash);
+    set("r2", ok ? pct(m0 * 12 / amt) : dash);
+    set("r3", ok ? pct(m1 * 12 / amt) : dash);
 
     $("hMonth").textContent = ok ? won(m1) : dash;
     $("hMonthPre").textContent = ok ? "세전 " + won(m0) + " · 연 " + won(m1 * 12) + " (세후)" : "기준가와 매입금액을 입력하세요";
