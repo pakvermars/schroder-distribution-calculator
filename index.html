@@ -153,7 +153,7 @@ td.hot { color: var(--hot); font-weight: 600; }
       <h2 id="out-h">분배금 및 분배율</h2>
 
       <div class="headline">
-        <div class="big"><span class="k">매월 받는 분배금 (세후)</span><span class="v" id="hMonth">–</span><span class="s" id="hMonthPre">–</span></div>
+        <div class="big"><span class="k">매월 받는 분배금 (세전)</span><span class="v" id="hMonth">–</span><span class="s" id="hMonthPre">–</span></div>
         <div class="big"><span class="k">매입금액 대비 연 분배율 (세전)</span><span class="v hot" id="hRate">–</span><span class="s" id="hRatePost">–</span></div>
       </div>
 
@@ -246,8 +246,8 @@ td.hot { color: var(--hot); font-weight: 600; }
     set("r2", ok ? pct(m0 * 12 / amt) : dash);
     set("r3", ok ? pct(m1 * 12 / amt) : dash);
 
-    $("hMonth").textContent = ok ? won(m1) : dash;
-    $("hMonthPre").textContent = ok ? "세전 " + won(m0) + " · 연 " + won(m1 * 12) + " (세후)" : "기준가와 매입금액을 입력하세요";
+    $("hMonth").textContent = ok ? won(m0) : dash;
+    $("hMonthPre").textContent = ok ? "세후 " + won(m1) + " · 연 " + won(m0 * 12) + " (세전)" : "기준가와 매입금액을 입력하세요";
     $("hRate").textContent = nav > 0 ? pct(rate) : dash;
     $("hRatePost").textContent = nav > 0 ? "세후 " + pct(rate * keep) : "기준가를 입력하세요";
 
